@@ -1,0 +1,110 @@
+#!/bin/sh
+
+set -e
+
+source "${JBOSS_CONTAINER_UTIL_LOGGING_MODULE}/logging.sh"
+source "${JBOSS_CONTAINER_MAVEN_S2I_MODULE}/maven-s2i"
+
+# include our s2i_core_*() overrides/extensions
+source "${JBOSS_CONTAINER_JAVA_S2I_MODULE}/s2i-core-hooks"
+
+# inject our overridden maven_s2i_*() functions
+source "${JBOSS_CONTAINER_JAVA_S2I_MODULE}/maven-s2i-overrides"
+
+# invoke the build
+
+
+copyLibs() {
+
+  if [ -z $1 ]; then
+    echo "No file extension provided";
+    exit 1;
+  fi
+  ls /tmp/src/configuration/libs/$1 > /dev/null 2>&1
+  testext=$?
+  if [ $testext -eq 0  ]
+  then
+   for lib in $(ls  /tmp/src/configuration/libs/$1)
+   do
+        cp -rfv  $lib  ${GLASSFISH_DIR}/glassfish/domains/${DOMAIN_NAME}/lib/  ;
+   done
+  fi
+
+}
+
+copyCerts() {
+  
+  if [ -z $1 ]; then
+    echo "No certificate extension provided"
+    exit 1;
+  fi
+  ls /tmp/src/configuration/certs/${DEPLOY_ENV}/$1 > /dev/null 2>&1
+  testext=$?
+  if [ $testext -eq 0 ]
+  then
+    for cert in $(ls /tmp/src/configuration/certs/${DEPLOY_ENV}/$1)
+    do
+        cp -rfv $cert ${GLASSFISH_DIR}/glassfish/domains/${DOMAIN_NAME}/config/ ;
+    done
+  fi
+
+}
+
+importCert() {
+  
+  aliasname=$(basename $1 $2)
+  keystore=${GLASSFISH_DIR}/glassfish/domains/${DOMAIN_NAME}/config/$3
+  keytool -importcert -alias $aliasname -file $1 -storepass changeit -keystore $keystore -noprompt
+}
+
+importCerts() {
+
+  if [ -z "$1" ]; then
+    echo "No certificate extension provided"
+    exit 1;
+  fi
+  extension=$1
+  ls ${GLASSFISH_DIR}/glassfish/domains/${DOMAIN_NAME}/config/$1  > /dev/null 2>&1
+  testext=$?
+  if [ $testext -eq 0 ]
+  then
+    for cert in $(ls ${GLASSFISH_DIR}/glassfish/domains/${DOMAIN_NAME}/config/$1)
+    do
+       echo "Importing $cert in cacerts.jks"
+       importCert $cert ${extension:1} cacerts.jks
+       echo "Importing $cert in keystore.jks"
+       importCert $cert ${extension:1} keystore.jks
+    done
+  fi
+
+}
+
+
+
+###mar files
+copyLibs *.mar
+
+###jar files
+copyLibs *.jar
+
+###crt files
+copyCerts *.crt
+
+###importing crt files
+importCerts *.crt
+
+
+if [ -d "/tmp/src/target" ]
+then
+    echo "Maybe binary deployment..."
+    for i in ${S2I_SOURCE_DEPLOYMENTS_FILTER}
+    do
+        echo "Puttin in deployment directory $i"
+	cp -rfv /tmp/src/target/$i  ${DEPLOY_DIR}/
+    done        
+else
+    echo "Starting maven build ..."
+    maven_s2i_build
+fi
+
+

@@ -1,0 +1,10 @@
+#!/bin/bash -e
+#
+# S2I run script for the 'quay.factory.promnet.com:5000/spi/s2i-payara5-server-full-jdk11' image.
+# The run script executes the server that runs your application.
+#
+# For more information see the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+
+exec /tini -s  --  ${SCRIPT_DIR}/entrypoint.sh

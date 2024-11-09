@@ -1,0 +1,52 @@
+{
+  "kind": "ImageStream",
+  "apiVersion": "image.openshift.io/v1",
+  "metadata": {
+    "name": "payara6-jdk21",
+    "annotations": {
+      "openshift.io/display-name": "payara6-jdk21"
+    }
+  },
+  "spec": {
+    "tags": [
+      {
+        "name": "latest",
+        "annotations": {
+          "openshift.io/display-name": "Payara6 (Latest)",
+          "openshift.io/provider-display-name": "Payara.",
+          "description": "Build and run Jakarta EE  applications on Payara6.",
+          "iconClass": "icon-java",
+          "tags": "builder,Java,Payara6,payara6-jdk21",
+          "supports":"Java",
+          "sampleRepo": "https://github.com/xtecuan/demoweb.git"
+        },
+        "from": {
+          "kind": "ImageStreamTag",
+          "name": "payara6-server-full-jdk21"
+        },
+        "referencePolicy": {
+          "type": "Local"
+        }
+      },
+      {
+        "name": "payara6-server-full-jdk21",
+        "annotations": {
+          "openshift.io/display-name": "Payara6 (payara-6.2024.10 JDK21)",
+          "openshift.io/provider-display-name": "Payara.",
+          "description": "Build and run Jakarta EE  applications on Payara6.",
+          "iconClass": "icon-java",
+          "tags": "builder,Java,Payara6",
+          "version": "6",
+          "sampleRepo": "https://github.com/xtecuan/demoweb.git"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "quay.io/xtecuan/s2i-payara6-server-full-jdk21:latest"
+        },
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    ]
+  }
+}

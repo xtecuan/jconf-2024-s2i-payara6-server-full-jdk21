@@ -1,0 +1,193 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "description": "The application's http port."
+                },
+                "labels": {
+                    "application": "demoweb-xtecuan-dev"
+                },
+                "name": "demoweb-xtecuan-dev"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "port": 8080,
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "deploymentConfig": "demoweb-xtecuan-dev"
+                }
+            }
+        },
+        {
+            "apiVersion": "route.openshift.io/v1",
+            "id": "demoweb-xtecuan-dev-http",
+            "kind": "Route",
+            "metadata": {
+                "annotations": {
+                    "description": "Route for application's http service."
+                },
+                "labels": {
+                    "application": "demoweb-xtecuan-dev"
+                },
+                "name": "demoweb-xtecuan-dev"
+            },
+            "spec": {
+                "host": "demoweb.xtecuan.dev.apps.sandbox-m3.1530.p1.openshiftapps.com",
+                "to": {
+                    "name": "demoweb-xtecuan-dev"
+                }
+            }
+        },
+        {
+            "apiVersion": "image.openshift.io/v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "labels": {
+                    "application": "demoweb-xtecuan-dev"
+                },
+                "name": "demoweb-xtecuan-dev"
+            }
+        },
+        {
+            "apiVersion": "build.openshift.io/v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "labels": {
+                    "application": "demoweb-xtecuan-dev"
+                },
+                "name": "demoweb-xtecuan-dev"
+            },
+            "spec": {
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "demoweb-xtecuan-dev:latest"
+                    }
+                },
+                "source": {
+                    "contextDir": "/",
+                    "git": {
+                        "ref": "main",
+                        "uri": "https://github.com/xtecuan/demoweb.git"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "sourceStrategy": {
+                        "forcePull": true,
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "payara6-jdk21:latest",
+                            "namespace": "xtecuan-dev"
+                        }
+                    },
+                    "type": "Source"
+                },
+                "triggers": [
+                    {
+                        "github": {
+                            "secret": "cjCnlwPD"
+                        },
+                        "type": "GitHub"
+                    },
+                    {
+                        "generic": {
+                            "secret": "yCm7rFaK"
+                        },
+                        "type": "Generic"
+                    },
+                    {
+                        "imageChange": {},
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "apps.openshift.io/v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "labels": {
+                    "application": "demoweb-xtecuan-dev"
+                },
+                "name": "demoweb-xtecuan-dev"
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "deploymentConfig": "demoweb-xtecuan-dev"
+                },
+                "strategy": {
+                    "type": "Recreate"
+                },
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "application": "demoweb-xtecuan-dev",
+                            "deploymentConfig": "demoweb-xtecuan-dev"
+                        },
+                        "name": "demoweb-xtecuan-dev"
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [],
+                                "image": "demoweb-xtecuan-dev",
+                                "imagePullPolicy": "Always",
+                                "name": "demoweb-xtecuan-dev",
+                                "ports": [
+                                    {
+                                        "containerPort": 8778,
+                                        "name": "jolokia",
+                                        "protocol": "TCP"
+                                    },
+                                    {
+                                        "containerPort": 8080,
+                                        "name": "http",
+                                        "protocol": "TCP"
+                                    },
+                                    {
+                                        "containerPort": 8443,
+                                        "name": "https",
+                                        "protocol": "TCP"
+                                    }
+                                ]
+                            }
+                        ],
+                        "terminationGracePeriodSeconds": 75
+                    }
+                },
+                "triggers": [
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "demoweb-xtecuan-dev"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "demoweb-xtecuan-dev:latest"
+                            }
+                        },
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ]
+            }
+        }
+    ]
+}

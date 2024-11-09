@@ -1,0 +1,4 @@
+create-custom-resource --factoryClass=org.glassfish.resources.custom.factory.PrimitivesAndStringFactory --resType=java.lang.String --enabled=true --target=domain demo/home
+create-resource-ref --enabled=true --target=server demo/home
+set resources.custom-resource.demo/home.property.value=/opt/payara/demo-home
+set resources.custom-resource.demo/home.property.value.description=Demo Directory
