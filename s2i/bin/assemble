@@ -82,16 +82,16 @@ importCerts() {
 
 
 ###mar files
-copyLibs *.mar
+#copyLibs *.mar
 
 ###jar files
-copyLibs *.jar
+#copyLibs *.jar
 
 ###crt files
-copyCerts *.crt
+#copyCerts *.crt
 
 ###importing crt files
-importCerts *.crt
+#importCerts *.crt
 
 
 if [ -d "/tmp/src/target" ]
@@ -104,7 +104,12 @@ then
     done        
 else
     echo "Starting maven build ..."
+    if [ -d "/tmp/src/configuration" ]
+    then
+       cp -rfv /tmp/src/configuration  $HOME_DIR
+    fi
     maven_s2i_build
 fi
+
 
 

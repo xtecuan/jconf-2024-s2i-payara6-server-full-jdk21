@@ -37,10 +37,10 @@ ENV HOME_DIR=/opt/payara\
     JVM_ARGS=\
     GLASSFISH_ARGS=\
     DEPLOY_PROPS=\
-    POSTBOOT_COMMANDS=/opt/payara/config/post-boot-commands.asadmin\
-    POSTBOOT_COMMANDS_FINAL=/opt/payara/config/post-boot-commands-final.asadmin\
-    PREBOOT_COMMANDS=/opt/payara/config/pre-boot-commands.asadmin \
-    PREBOOT_COMMANDS_FINAL=/opt/payara/config/pre-boot-commands-final.asadmin
+    POSTBOOT_COMMANDS=/opt/payara/configuration/asadmin-scripts/post-boot-commands.asadmin\
+    POSTBOOT_COMMANDS_FINAL=/opt/payara/configuration/asadmin-scripts/post-boot-commands-final.asadmin\
+    PREBOOT_COMMANDS=/opt/payara/configuration/asadmin-scripts/pre-boot-commands.asadmin \
+    PREBOOT_COMMANDS_FINAL=/opt/payara/configuration/asadmin-scripts/pre-boot-commands-final.asadmin
     #DEPLOY_ENV=dev
 
 ENV PATH="${PATH}:${PAYARA_DIR}/bin"
@@ -136,7 +136,7 @@ RUN wget --no-verbose -O payara.zip ${PAYARA_PKG} && \
     # Cleanup unused files
     rm -rf \
         /tmp/tmpFile \
-        glassfish.zip \
+        payara.zip \
         ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/osgi-cache \
         ${PAYARA_DIR}/glassfish/domains/${DOMAIN_NAME}/logs 
         #${PASSWORD_FILE}
